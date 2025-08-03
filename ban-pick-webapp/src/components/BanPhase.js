@@ -1,6 +1,6 @@
 // BanPhase.js - Component cho giai đoạn ban items
 import React from 'react';
-import { TEAMS, GAME_ITEMS } from '../utils/constants';
+import { TEAMS } from '../utils/constants';
 
 const BanPhase = ({
   // Multiplayer props
@@ -16,6 +16,9 @@ const BanPhase = ({
 }) => {
   // Check if this is multiplayer mode
   const isMultiplayer = gameState && roomData;
+
+  // Get game items from config - required for game to work
+  const gameItems = isMultiplayer ? roomData?.config?.gameItems : banRounds?.gameItems; // Single player should provide gameItems in config
 
   console.log('BanPhase render:', {
     isMultiplayer,
@@ -41,6 +44,18 @@ const BanPhase = ({
       <div className='ban-phase'>
         <div className='loading-state'>
           <p>Loading game configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if no game items available
+  if (!gameItems || gameItems.length === 0) {
+    return (
+      <div className='ban-phase'>
+        <div className='error-state'>
+          <p>❌ No game items available</p>
+          <p>Game items must be provided in config</p>
         </div>
       </div>
     );
@@ -192,7 +207,7 @@ const BanPhase = ({
 
       {/* Items Grid */}
       <div className='items-grid'>
-        {GAME_ITEMS.map(item => {
+        {gameItems.map(item => {
           const itemStatus = getItemStatus(item);
           const disabled = isItemDisabled(item);
 

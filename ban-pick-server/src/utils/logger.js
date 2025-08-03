@@ -3,8 +3,6 @@
  * Simple logging utility with different levels
  */
 
-const config = require('../config/server.config');
-
 const LOG_LEVELS = {
   ERROR: 0,
   WARN: 1,
@@ -21,8 +19,8 @@ const LOG_COLORS = {
 };
 
 class Logger {
-  constructor() {
-    this.currentLevel = LOG_LEVELS[config.LOG_LEVEL.toUpperCase()] || LOG_LEVELS.INFO;
+  constructor(logLevel = 'info') {
+    this.currentLevel = LOG_LEVELS[logLevel.toUpperCase()] || LOG_LEVELS.INFO;
   }
 
   formatMessage(level, message, meta = {}) {
@@ -62,4 +60,4 @@ class Logger {
   }
 }
 
-module.exports = new Logger();
+module.exports = new Logger(process.env.LOG_LEVEL || 'info');

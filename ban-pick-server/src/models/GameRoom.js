@@ -110,7 +110,7 @@ class GameRoom {
   // Game logic
   startGame() {
     this.gameState.phase = 'ban';
-    this.gameState.currentTeam = this.config.BAN_ROUNDS['1'].firstTeam;
+    this.gameState.currentTeam = this.config.banRounds['1'].firstTeam;
     this.updateActivity();
 
     logger.info(`Game started in room ${this.roomId}`);
@@ -142,7 +142,7 @@ class GameRoom {
       return { success: false, message: 'Not your turn' };
     }
 
-    const round = this.config.BAN_ROUNDS[this.gameState.currentRound];
+    const round = this.config.banRounds[this.gameState.currentRound];
     if (!round) {
       return { success: false, message: 'Invalid round' };
     }
@@ -178,7 +178,7 @@ class GameRoom {
       return { success: false, message: 'Invalid pick attempt' };
     }
 
-    const round = this.config.PICK_ROUNDS[this.gameState.currentRound];
+    const round = this.config.pickRounds[this.gameState.currentRound];
     if (!round) {
       return { success: false, message: 'Invalid round' };
     }
@@ -273,12 +273,12 @@ class GameRoom {
   proceedToNextPhase() {
     if (this.gameState.phase === 'ban') {
       // Check if there's a pick round for current round
-      if (this.config.PICK_ROUNDS[this.gameState.currentRound]) {
+      if (this.config.pickRounds[this.gameState.currentRound]) {
         this.gameState.phase = 'pick';
         this.gameState.pickProgress = { stepIndex: 0, teamCount: 0 };
 
         // Set current team to the first team in pick sequence
-        const firstPickStep = this.config.PICK_ROUNDS[this.gameState.currentRound][0];
+        const firstPickStep = this.config.pickRounds[this.gameState.currentRound][0];
         this.gameState.currentTeam = firstPickStep.team;
 
         logger.debug(`Proceeding to pick phase, first team: ${this.gameState.currentTeam}`);
@@ -292,10 +292,10 @@ class GameRoom {
 
   moveToNextRound() {
     const nextRound = this.gameState.currentRound + 1;
-    if (this.config.BAN_ROUNDS[nextRound]) {
+    if (this.config.banRounds[nextRound]) {
       this.gameState.currentRound = nextRound;
       this.gameState.phase = 'ban';
-      this.gameState.currentTeam = this.config.BAN_ROUNDS[nextRound].firstTeam;
+      this.gameState.currentTeam = this.config.banRounds[nextRound].firstTeam;
       this.gameState.banCount = { Blue: 0, Red: 0 };
     } else {
       this.gameState.phase = 'complete';
@@ -309,7 +309,7 @@ class GameRoom {
       currentRound: 1,
       bannedItems: [],
       pickedItems: [],
-      currentTeam: this.config.BAN_ROUNDS['1'].firstTeam,
+      currentTeam: this.config.banRounds['1'].firstTeam,
       banCount: { Blue: 0, Red: 0 },
       pickProgress: { stepIndex: 0, teamCount: 0 },
     };
@@ -322,8 +322,9 @@ class GameRoom {
   broadcastGameState() {
     // Prepare config in client-friendly format
     const clientConfig = {
-      banRounds: this.config.BAN_ROUNDS,
-      pickRounds: this.config.PICK_ROUNDS,
+      banRounds: this.config.banRounds,
+      pickRounds: this.config.pickRounds,
+      gameItems: this.config.gameItems, // Add game items to client config
     };
 
     this.players.forEach((player) => {

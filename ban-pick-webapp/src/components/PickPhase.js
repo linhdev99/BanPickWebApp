@@ -1,5 +1,5 @@
 import React from 'react';
-import { TEAMS, GAME_ITEMS } from '../utils/constants'; // eslint-disable-line no-unused-vars
+import { TEAMS } from '../utils/constants'; // eslint-disable-line no-unused-vars
 
 const PickPhase = ({
   // Multiplayer props
@@ -34,12 +34,27 @@ const PickPhase = ({
   const yourTeam = isMultiplayer ? roomData.yourTeam : null;
   const pickProgress = isMultiplayer ? gameState.pickProgress : { stepIndex: 0, teamCount: 0 };
 
+  // Get game items from config - required for game to work
+  const gameItems = isMultiplayer ? roomData?.config?.gameItems : pickRounds?.gameItems; // Single player should provide gameItems in config
+
   // Show loading state if multiplayer config is not yet available
   if (isMultiplayer && !roomData?.config) {
     return (
       <div className='pick-phase'>
         <div className='loading-state'>
           <p>Loading game configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if no game items available
+  if (!gameItems || gameItems.length === 0) {
+    return (
+      <div className='pick-phase'>
+        <div className='error-state'>
+          <p>❌ No game items available</p>
+          <p>Game items must be provided in config</p>
         </div>
       </div>
     );
@@ -103,8 +118,6 @@ const PickPhase = ({
       }
     }
   };
-
-  const gameItems = GAME_ITEMS;
 
   if (!config?.pickRounds?.[currentRoundToUse] || !currentStep) {
     return (

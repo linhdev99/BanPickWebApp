@@ -53,6 +53,7 @@ const GameMain = ({
             // Universal props
             banRounds={{
               [activeRound]: gameConfig.banRounds?.[activeRound],
+              gameItems: gameConfig.gameItems, // Pass gameItems for single-player
             }}
             currentRound={activeRound}
             bannedItems={activeBannedItems}
@@ -71,6 +72,7 @@ const GameMain = ({
             // Universal props
             pickRounds={{
               [activeRound]: gameConfig.pickRounds?.[activeRound],
+              gameItems: gameConfig.gameItems, // Pass gameItems for single-player
             }}
             currentRound={activeRound}
             bannedItems={activeBannedItems}
