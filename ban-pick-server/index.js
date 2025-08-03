@@ -3,6 +3,9 @@
  * Starts the Ban-Pick multiplayer server
  */
 
+// Load environment variables
+require('dotenv').config();
+
 const BanPickServer = require('./src/app');
 const logger = require('./src/utils/logger');
 

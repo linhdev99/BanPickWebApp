@@ -7,7 +7,7 @@ class SocketService {
     this.callbacks = {};
   }
 
-  connect(serverUrl = 'http://localhost:5002') {
+  connect(serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:5000') {
     if (this.socket && this.socket.connected) {
       console.log('Already connected, reusing connection');
       return this.socket;
