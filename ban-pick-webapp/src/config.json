@@ -12,14 +12,14 @@
     "pickRounds": {
         "1": [
             { "team": "Blue", "count": 1 },
-            { "team": "Red",  "count": 2 },
+            { "team": "Red", "count": 2 },
             { "team": "Blue", "count": 2 },
-            { "team": "Red",  "count": 1 }
+            { "team": "Red", "count": 1 }
         ],
         "2": [
-            { "team": "Red",  "count": 1 },
+            { "team": "Red", "count": 1 },
             { "team": "Blue", "count": 2 },
-            { "team": "Red",  "count": 1 }
+            { "team": "Red", "count": 1 }
         ]
     }
 }
