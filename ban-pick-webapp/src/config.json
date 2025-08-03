@@ -1,25 +1,25 @@
 {
-    "banRounds": {
-        "1": {
-            "firstTeam": "Blue",
-            "countPerTeam": 3
-        },
-        "2": {
-            "firstTeam": "Red",
-            "countPerTeam": 2
-        }
+  "banRounds": {
+    "1": {
+      "firstTeam": "Blue",
+      "countPerTeam": 3
     },
-    "pickRounds": {
-        "1": [
-            { "team": "Blue", "count": 1 },
-            { "team": "Red", "count": 2 },
-            { "team": "Blue", "count": 2 },
-            { "team": "Red", "count": 1 }
-        ],
-        "2": [
-            { "team": "Red", "count": 1 },
-            { "team": "Blue", "count": 2 },
-            { "team": "Red", "count": 1 }
-        ]
+    "2": {
+      "firstTeam": "Red",
+      "countPerTeam": 2
     }
+  },
+  "pickRounds": {
+    "1": [
+      { "team": "Blue", "count": 1 },
+      { "team": "Red", "count": 2 },
+      { "team": "Blue", "count": 2 },
+      { "team": "Red", "count": 1 }
+    ],
+    "2": [
+      { "team": "Red", "count": 1 },
+      { "team": "Blue", "count": 2 },
+      { "team": "Red", "count": 1 }
+    ]
+  }
 }
