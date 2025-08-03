@@ -1,111 +1,197 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { TEAMS, GAME_ITEMS } from '../utils/constants'; // eslint-disable-line no-unused-vars
 
 const PickPhase = ({
+  // Multiplayer props
+  gameState,
+  roomData,
+  onPickItem,
+  // Single player props (fallback)
   pickRounds,
   currentRound = 1,
-  bannedItems,
+  bannedItems = [],
   pickedItems: globalPickedItems = [],
   onComplete,
 }) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [currentTeamCount, setCurrentTeamCount] = useState(0);
-  const [pickedItems, setPickedItems] = useState([]);
+  // Use multiplayer state if available, otherwise fallback to single player
+  const isMultiplayer = gameState && roomData;
 
-  useEffect(() => {
-    // Reset picked items for this round
-    setPickedItems([]);
-    setCurrentStepIndex(0);
-    setCurrentTeamCount(0);
-  }, [currentRound]);
+  console.log('PickPhase render:', {
+    isMultiplayer,
+    gameState,
+    roomData,
+    onPickItem: !!onPickItem,
+    config: roomData?.config,
+    pickRounds: roomData?.config?.pickRounds,
+    currentRound: gameState?.currentRound,
+    pickProgress: gameState?.pickProgress,
+  });
+
+  const bannedItemsToUse = isMultiplayer ? gameState.bannedItems : bannedItems;
+  const pickedItems = isMultiplayer ? gameState.pickedItems : globalPickedItems;
+  const config = isMultiplayer ? roomData.config : { pickRounds };
+  const currentRoundToUse = isMultiplayer ? gameState.currentRound : currentRound;
+  const yourTeam = isMultiplayer ? roomData.yourTeam : null;
+  const pickProgress = isMultiplayer ? gameState.pickProgress : { stepIndex: 0, teamCount: 0 };
+
+  // Show loading state if multiplayer config is not yet available
+  if (isMultiplayer && !roomData?.config) {
+    return (
+      <div className='pick-phase'>
+        <div className='loading-state'>
+          <p>Loading game configuration...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getCurrentStep = () => {
-    if (!pickRounds || !pickRounds[currentRound]) return null;
-    return pickRounds[currentRound][currentStepIndex];
+    if (!config?.pickRounds?.[currentRoundToUse]) return null;
+    return config.pickRounds[currentRoundToUse][pickProgress.stepIndex];
   };
-
-  const handlePick = item => {
-    const currentStep = getCurrentStep();
-    if (!currentStep) return;
-
-    const newPickedItems = [
-      ...pickedItems,
-      {
-        item,
-        team: currentStep.team,
-        round: currentRound,
-        step: currentStepIndex + 1,
-      },
-    ];
-    setPickedItems(newPickedItems);
-
-    const newTeamCount = currentTeamCount + 1;
-
-    // Kiểm tra xem đã đủ số lượt pick cho team hiện tại chưa
-    if (newTeamCount >= currentStep.count) {
-      // Chuyển sang step tiếp theo
-      const nextStepIndex = currentStepIndex + 1;
-      if (nextStepIndex < pickRounds[currentRound].length) {
-        setCurrentStepIndex(nextStepIndex);
-        setCurrentTeamCount(0);
-      } else {
-        // Hoàn thành pick round hiện tại
-        onComplete(newPickedItems);
-      }
-    } else {
-      setCurrentTeamCount(newTeamCount);
-    }
-  };
-
-  const mockItems = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
 
   const currentStep = getCurrentStep();
 
-  if (!pickRounds || !currentStep) {
-    return <div>Pick phase completed or no pick rounds configured</div>;
+  // For multiplayer, use gameState.currentTeam; for single player, use currentStep.team
+  const currentTeam = isMultiplayer ? gameState.currentTeam : currentStep?.team;
+  const isYourTurn = isMultiplayer ? yourTeam === currentTeam : true;
+
+  const handlePick = item => {
+    console.log('Attempting to pick item:', item, {
+      isMultiplayer,
+      isYourTurn,
+      hasOnPickItem: !!onPickItem,
+      currentStep,
+      currentTeam,
+      yourTeam,
+      gameStateCurrentTeam: gameState?.currentTeam,
+    });
+
+    if (isMultiplayer) {
+      // Multiplayer: Use socket action
+      if (onPickItem && isYourTurn) {
+        console.log('Calling onPickItem for:', item);
+        onPickItem(item);
+      } else {
+        console.log('Cannot pick - not your turn or no onPickItem function');
+      }
+    } else {
+      // Single player: Keep original logic for backwards compatibility
+      if (!currentStep || !onComplete) return;
+
+      const newPickedItems = [
+        ...pickedItems,
+        {
+          item,
+          team: currentStep.team,
+          round: currentRound,
+          step: pickProgress.stepIndex + 1,
+        },
+      ];
+
+      const newTeamCount = pickProgress.teamCount + 1;
+
+      // Check if current step is complete
+      if (newTeamCount >= currentStep.count) {
+        const nextStepIndex = pickProgress.stepIndex + 1;
+        if (nextStepIndex < pickRounds[currentRound].length) {
+          // Move to next step
+        } else {
+          // Complete pick round
+          onComplete(newPickedItems);
+        }
+      }
+    }
+  };
+
+  const gameItems = GAME_ITEMS;
+
+  if (!config?.pickRounds?.[currentRoundToUse] || !currentStep) {
+    return (
+      <div className='pick-phase'>
+        <p>No pick configuration found for round {currentRoundToUse}</p>
+        <p>Available rounds: {Object.keys(config?.pickRounds || {}).join(', ')}</p>
+        <p>Current step data: {currentStep ? 'Available' : 'Missing'}</p>
+      </div>
+    );
   }
 
-  const remainingPicks = currentStep.count - currentTeamCount;
+  const roundSteps = config.pickRounds[currentRoundToUse];
+  const remainingPicks = currentStep.count - pickProgress.teamCount;
 
   return (
     <div className='pick-phase'>
-      <h2>Pick Phase - Round {currentRound}</h2>
+      <h2>Pick Phase - Round {currentRoundToUse}</h2>
+
+      {/* Multiplayer info */}
+      {isMultiplayer && (
+        <div className='multiplayer-info'>
+          <div className='room-info'>
+            <p>
+              <strong>Room:</strong> {roomData.roomId}
+            </p>
+            <p>
+              <strong>Your Team:</strong> {yourTeam}
+            </p>
+            <p>
+              <strong>Players:</strong>{' '}
+              {roomData.players?.map(p => `${p.name} (${p.team})`).join(', ')}
+            </p>
+          </div>
+          {!isYourTurn && (
+            <div className='waiting-message'>
+              <p>🕐 Waiting for {currentTeam} team to pick...</p>
+            </div>
+          )}
+          {isYourTurn && (
+            <div className='your-turn-message'>
+              <p>⚡ Your turn to pick!</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className='current-turn'>
-        <h3>Current Turn: {currentStep.team} Team</h3>
+        <h3>
+          Current Turn: {currentTeam} Team{' '}
+          {isMultiplayer && yourTeam === currentTeam ? '(You)' : ''}
+        </h3>
         <p>Remaining picks: {remainingPicks}</p>
         <p>
-          Step {currentStepIndex + 1} of {pickRounds[currentRound].length}
+          Step {pickProgress.stepIndex + 1} of {roundSteps.length}
         </p>
       </div>
 
       <div className='round-overview'>
-        <h4>Round {currentRound} Schedule:</h4>
+        <h4>Round {currentRoundToUse} Schedule:</h4>
         <ol>
-          {pickRounds[currentRound].map((step, index) => (
+          {roundSteps.map((step, index) => (
             <li
               key={index}
-              className={
-                index === currentStepIndex ? 'current' : index < currentStepIndex ? 'completed' : ''
-              }
+              className={`${
+                index === pickProgress.stepIndex
+                  ? 'current'
+                  : index < pickProgress.stepIndex
+                    ? 'completed'
+                    : ''
+              } ${isMultiplayer && yourTeam === step.team ? 'your-team-step' : ''}`}
             >
-              {step.team} Team: {step.count} pick(s)
+              {step.team} Team: {step.count} pick(s){' '}
+              {isMultiplayer && yourTeam === step.team ? '(Your turn)' : ''}
             </li>
           ))}
         </ol>
       </div>
 
       <div className='items-grid'>
-        {mockItems.map((item, index) => {
-          const isBanned = bannedItems.some(ban => ban.item === item);
-          const isPicked =
-            globalPickedItems.some(pick => pick.item === item) ||
-            pickedItems.some(pick => pick.item === item);
+        {gameItems.map((item, index) => {
+          const isBanned = bannedItemsToUse.some(ban => ban.item === item);
+          const isPicked = pickedItems.some(pick => pick.item === item);
           const isAvailable = !isBanned && !isPicked;
+          const isDisabled = !isAvailable || (isMultiplayer && !isYourTurn);
 
-          // Tìm team nào đã pick item này
-          const pickedBy =
-            globalPickedItems.find(pick => pick.item === item) ||
-            pickedItems.find(pick => pick.item === item);
+          // Find which team picked this item
+          const pickedBy = pickedItems.find(pick => pick.item === item);
 
           return (
             <button
@@ -116,9 +202,10 @@ const PickPhase = ({
                   : isPicked
                     ? `picked ${pickedBy ? pickedBy.team.toLowerCase() : ''}`
                     : ''
-              }`}
-              onClick={() => isAvailable && handlePick(item)}
-              disabled={!isAvailable}
+              } ${isMultiplayer && !isYourTurn ? 'not-your-turn' : ''}`}
+              onClick={() => isAvailable && !isDisabled && handlePick(item)}
+              disabled={isDisabled}
+              title={isMultiplayer && !isYourTurn ? 'Not your turn' : ''}
             >
               {item}
               {isBanned && <span className='status-label banned-label'>BANNED</span>}
@@ -136,28 +223,38 @@ const PickPhase = ({
         <h3>Picked Items This Round:</h3>
         <div className='team-picks'>
           <div className='blue-picks'>
-            <h4>Blue Team:</h4>
-            <ul>
-              {pickedItems
-                .filter(pick => pick.team === 'Blue')
-                .map((pick, index) => (
-                  <li key={index}>
-                    {pick.item} (Step {pick.step})
-                  </li>
-                ))}
-            </ul>
+            <h4>Blue Team {isMultiplayer && yourTeam === 'Blue' ? '(You)' : ''}:</h4>
+            {pickedItems.filter(pick => pick.team === 'Blue' && pick.round === currentRoundToUse)
+              .length === 0 ? (
+              <p>No picks yet</p>
+            ) : (
+              <ul>
+                {pickedItems
+                  .filter(pick => pick.team === 'Blue' && pick.round === currentRoundToUse)
+                  .map((pick, index) => (
+                    <li key={index}>
+                      {pick.item} (Step {pick.step || 'N/A'})
+                    </li>
+                  ))}
+              </ul>
+            )}
           </div>
           <div className='red-picks'>
-            <h4>Red Team:</h4>
-            <ul>
-              {pickedItems
-                .filter(pick => pick.team === 'Red')
-                .map((pick, index) => (
-                  <li key={index}>
-                    {pick.item} (Step {pick.step})
-                  </li>
-                ))}
-            </ul>
+            <h4>Red Team {isMultiplayer && yourTeam === 'Red' ? '(You)' : ''}:</h4>
+            {pickedItems.filter(pick => pick.team === 'Red' && pick.round === currentRoundToUse)
+              .length === 0 ? (
+              <p>No picks yet</p>
+            ) : (
+              <ul>
+                {pickedItems
+                  .filter(pick => pick.team === 'Red' && pick.round === currentRoundToUse)
+                  .map((pick, index) => (
+                    <li key={index}>
+                      {pick.item} (Step {pick.step || 'N/A'})
+                    </li>
+                  ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

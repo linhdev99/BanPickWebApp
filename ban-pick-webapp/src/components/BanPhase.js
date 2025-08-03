@@ -1,120 +1,222 @@
-import React, { useState, useEffect } from 'react';
+// BanPhase.js - Component cho giai đoạn ban items
+import React from 'react';
+import { TEAMS, GAME_ITEMS } from '../utils/constants';
 
 const BanPhase = ({
+  // Multiplayer props
+  gameState,
+  roomData,
+  onBanItem,
+  // Single player props (fallback)
   banRounds,
   currentRound = 1,
-  bannedItems: globalBannedItems = [],
-  pickedItems: globalPickedItems = [],
+  bannedItems = [],
+  pickedItems = [],
   onComplete,
 }) => {
-  const [currentTeam, setCurrentTeam] = useState('Blue');
-  const [banCount, setBanCount] = useState({});
-  const [bannedItems, setBannedItems] = useState([]);
+  // Check if this is multiplayer mode
+  const isMultiplayer = gameState && roomData;
 
-  useEffect(() => {
-    if (banRounds && banRounds[currentRound]) {
-      setCurrentTeam(banRounds[currentRound].firstTeam);
-      setBanCount({
-        Blue: 0,
-        Red: 0,
-      });
-      setBannedItems([]); // Reset banned items for this round
-    }
-  }, [currentRound, banRounds]);
+  console.log('BanPhase render:', {
+    isMultiplayer,
+    gameState,
+    roomData,
+    onBanItem: !!onBanItem,
+    config: roomData?.config,
+    banRounds: roomData?.config?.banRounds,
+    currentRound: gameState?.currentRound,
+    roundData: isMultiplayer
+      ? roomData?.config?.banRounds?.[gameState?.currentRound]
+      : banRounds?.[currentRound],
+  });
 
-  const handleBan = item => {
-    const round = banRounds[currentRound];
-    if (!round) return;
+  // Get current round data
+  const roundData = isMultiplayer
+    ? roomData?.config?.banRounds?.[gameState.currentRound]
+    : banRounds?.[currentRound];
 
-    const newBannedItems = [...bannedItems, { item, team: currentTeam, round: currentRound }];
-    setBannedItems(newBannedItems);
+  // Show loading state if multiplayer config is not yet available
+  if (isMultiplayer && !roomData?.config) {
+    return (
+      <div className='ban-phase'>
+        <div className='loading-state'>
+          <p>Loading game configuration...</p>
+        </div>
+      </div>
+    );
+  }
 
-    const newBanCount = { ...banCount };
-    newBanCount[currentTeam]++;
+  if (!roundData) {
+    return (
+      <div className='ban-phase'>
+        <p>
+          No ban configuration found for round{' '}
+          {isMultiplayer ? gameState.currentRound : currentRound}
+        </p>
+        <p>
+          Available rounds:{' '}
+          {Object.keys(isMultiplayer ? roomData?.config?.banRounds || {} : banRounds || {}).join(
+            ', '
+          )}
+        </p>
+      </div>
+    );
+  }
 
-    setBanCount(newBanCount);
+  // Get current team info
+  const currentTeam = isMultiplayer ? gameState.currentTeam : 'Blue'; // Default for single player
+  const yourTeam = isMultiplayer ? roomData.yourTeam : null;
+  const isYourTurn = isMultiplayer ? currentTeam === yourTeam : true;
 
-    // Chuyển team nếu team hiện tại chưa đạt đủ số lượt ban
-    // và team kia cũng chưa đạt đủ số lượt ban
-    if (newBanCount[currentTeam] < round.countPerTeam) {
-      const nextTeam = currentTeam === 'Blue' ? 'Red' : 'Blue';
-      if (newBanCount[nextTeam] < round.countPerTeam) {
-        setCurrentTeam(nextTeam);
+  // Get ban counts
+  const banCount = isMultiplayer ? gameState.banCount : { Blue: 0, Red: 0 };
+
+  const handleItemBan = item => {
+    console.log('Attempting to ban item:', item, {
+      isMultiplayer,
+      isYourTurn,
+      hasOnBanItem: !!onBanItem,
+      currentTeam,
+      yourTeam,
+    });
+
+    if (isMultiplayer) {
+      if (onBanItem && isYourTurn) {
+        console.log('Calling onBanItem for:', item);
+        onBanItem(item);
+      } else {
+        console.log('Cannot ban - not your turn or no onBanItem function');
       }
     } else {
-      // Nếu team hiện tại đã đạt đủ số lượt, chuyển sang team kia (nếu team kia chưa đủ)
-      const nextTeam = currentTeam === 'Blue' ? 'Red' : 'Blue';
-      if (newBanCount[nextTeam] < round.countPerTeam) {
-        setCurrentTeam(nextTeam);
-      }
-    }
+      // Single player logic
+      const newBan = {
+        item,
+        team: currentTeam,
+        round: currentRound,
+        player: 'Player',
+      };
 
-    // Kiểm tra xem round hiện tại đã hoàn thành chưa
-    if (newBanCount.Blue >= round.countPerTeam && newBanCount.Red >= round.countPerTeam) {
-      // Hoàn thành ban round này
-      onComplete(newBannedItems);
+      console.log('Single player ban:', newBan);
+      if (onComplete) {
+        onComplete([newBan]);
+      }
     }
   };
 
-  const mockItems = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
+  const isItemBanned = item => {
+    return bannedItems.some(ban => ban.item === item);
+  };
 
-  if (!banRounds || !banRounds[currentRound]) {
-    return <div>No ban rounds configured</div>;
-  }
+  const isItemPicked = item => {
+    return pickedItems.some(pick => pick.item === item);
+  };
 
-  const round = banRounds[currentRound];
-  const isRoundComplete = banCount.Blue >= round.countPerTeam && banCount.Red >= round.countPerTeam;
+  const isItemDisabled = item => {
+    return isItemBanned(item) || isItemPicked(item) || (isMultiplayer && !isYourTurn);
+  };
+
+  const getItemStatus = item => {
+    if (isItemBanned(item)) {
+      const ban = bannedItems.find(b => b.item === item);
+      return { status: 'banned', team: ban?.team, player: ban?.player };
+    }
+    if (isItemPicked(item)) {
+      const pick = pickedItems.find(p => p.item === item);
+      return { status: 'picked', team: pick?.team, player: pick?.player };
+    }
+    return { status: 'available' };
+  };
 
   return (
     <div className='ban-phase'>
-      <h2>Ban Phase - Round {currentRound}</h2>
+      {/* Multiplayer Info */}
+      {isMultiplayer && (
+        <div className='multiplayer-info'>
+          <div className='room-info'>
+            <p>
+              <strong>Room:</strong> {roomData.roomId}
+            </p>
+            <p>
+              <strong>Your Team:</strong> {yourTeam}
+            </p>
+            <p>
+              <strong>Players:</strong>{' '}
+              {roomData.players?.map(p => `${p.name} (${p.team})`).join(', ')}
+            </p>
+          </div>
+        </div>
+      )}
 
+      {/* Round Info */}
+      <div className='round-info'>
+        <h2>Round {isMultiplayer ? gameState.currentRound : currentRound} - Ban Phase</h2>
+        <p>Each team bans {roundData.countPerTeam} items</p>
+      </div>
+
+      {/* Team Information */}
       <div className='team-info'>
-        <div className={`team ${currentTeam === 'Blue' ? 'active' : ''}`}>
+        <div
+          className={`team ${currentTeam === TEAMS.BLUE ? 'active' : ''} ${yourTeam === TEAMS.BLUE ? 'your-team' : ''}`}
+        >
           <h3>Blue Team</h3>
           <p>
-            Bans: {banCount.Blue || 0}/{round.countPerTeam}
+            Bans: {banCount.Blue} / {roundData.countPerTeam}
           </p>
         </div>
-        <div className={`team ${currentTeam === 'Red' ? 'active' : ''}`}>
+        <div
+          className={`team ${currentTeam === TEAMS.RED ? 'active' : ''} ${yourTeam === TEAMS.RED ? 'your-team' : ''}`}
+        >
           <h3>Red Team</h3>
           <p>
-            Bans: {banCount.Red || 0}/{round.countPerTeam}
+            Bans: {banCount.Red} / {roundData.countPerTeam}
           </p>
         </div>
       </div>
 
-      {!isRoundComplete && (
-        <div className='current-turn'>
-          <h3>Current Turn: {currentTeam} Team</h3>
-        </div>
-      )}
+      {/* Current Turn Indicator */}
+      <div className='current-turn'>
+        {isMultiplayer ? (
+          isYourTurn ? (
+            <div className='your-turn-message'>
+              <p>🎯 Your turn to ban! ({yourTeam} Team)</p>
+            </div>
+          ) : (
+            <div className='waiting-message'>
+              <p>⏳ Waiting for {currentTeam} team to ban...</p>
+            </div>
+          )
+        ) : (
+          <p>Current turn: {currentTeam} Team</p>
+        )}
+      </div>
 
+      {/* Items Grid */}
       <div className='items-grid'>
-        {mockItems.map((item, index) => {
-          const isBanned =
-            globalBannedItems.some(bannedItem => bannedItem.item === item) ||
-            bannedItems.some(bannedItem => bannedItem.item === item);
-          const isPicked = globalPickedItems.some(pickedItem => pickedItem.item === item);
-          const isDisabled = isBanned || isPicked || isRoundComplete;
-
-          // Tìm team nào đã pick item này
-          const pickedBy = globalPickedItems.find(pickedItem => pickedItem.item === item);
+        {GAME_ITEMS.map(item => {
+          const itemStatus = getItemStatus(item);
+          const disabled = isItemDisabled(item);
 
           return (
             <button
-              key={index}
-              className={`item ${
-                isBanned ? 'banned' : isPicked ? `picked ${pickedBy.team.toLowerCase()}` : ''
-              }`}
-              onClick={() => !isDisabled && handleBan(item)}
-              disabled={isDisabled}
+              key={item}
+              className={`item ${itemStatus.status} ${itemStatus.team ? itemStatus.team.toLowerCase() : ''} ${disabled ? 'not-your-turn' : ''}`}
+              onClick={() => handleItemBan(item)}
+              disabled={disabled}
+              title={
+                itemStatus.status === 'banned'
+                  ? `Banned by ${itemStatus.player} (${itemStatus.team})`
+                  : itemStatus.status === 'picked'
+                    ? `Picked by ${itemStatus.player} (${itemStatus.team})`
+                    : `Click to ban ${item}`
+              }
             >
               {item}
-              {isBanned && <span className='banned-label'>BANNED</span>}
-              {isPicked && (
-                <span className={`picked-label ${pickedBy.team.toLowerCase()}`}>
-                  PICKED BY {pickedBy.team.toUpperCase()}
+              {itemStatus.status === 'banned' && (
+                <span className={`status-label banned-label`}>BANNED</span>
+              )}
+              {itemStatus.status === 'picked' && (
+                <span className={`status-label picked-label ${itemStatus.team?.toLowerCase()}`}>
+                  PICKED
                 </span>
               )}
             </button>
@@ -122,16 +224,38 @@ const BanPhase = ({
         })}
       </div>
 
-      <div className='banned-items'>
-        <h3>Banned Items This Round:</h3>
-        <ul>
-          {bannedItems.map((ban, index) => (
-            <li key={index}>
-              {ban.item} - {ban.team} Team
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Current Bans Display */}
+      {bannedItems.length > 0 && (
+        <div className='banned-items'>
+          <h3>Banned Items</h3>
+          <div className='team-results'>
+            <div className='team-result'>
+              <h4>Blue Team Bans</h4>
+              <ul>
+                {bannedItems
+                  .filter(ban => ban.team === TEAMS.BLUE)
+                  .map((ban, index) => (
+                    <li key={index}>
+                      {ban.item} {ban.player && `(by ${ban.player})`}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+            <div className='team-result'>
+              <h4>Red Team Bans</h4>
+              <ul>
+                {bannedItems
+                  .filter(ban => ban.team === TEAMS.RED)
+                  .map((ban, index) => (
+                    <li key={index}>
+                      {ban.item} {ban.player && `(by ${ban.player})`}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

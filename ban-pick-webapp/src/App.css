@@ -318,6 +318,506 @@
   box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
 }
 
+/* Game Mode Menu Styles */
+.game-mode-menu {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.menu-container {
+  text-align: center;
+  max-width: 600px;
+  padding: 2rem;
+}
+
+.menu-container h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+}
+
+.mode-options {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 2rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 200px;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-5px);
+}
+
+.mode-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.mode-btn h3 {
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.mode-btn p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.features {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.features h3 {
+  margin-top: 0;
+}
+
+.features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.features li {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+/* Game Lobby Styles */
+.game-lobby {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: white;
+  padding: 1rem;
+}
+
+.lobby-container {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lobby-container h1 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.connection-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1000;
+}
+
+.connection-status.connected {
+  background: #28a745;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background: #dc3545;
+  color: white;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.room-info {
+  margin-bottom: 10px;
+}
+
+.room-info p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.room-info strong {
+  color: #ffd700;
+}
+
+.lobby-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 1rem;
+}
+
+.room-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.room-input-group input {
+  flex: 1;
+}
+
+.generate-btn {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.team-selection {
+  display: flex;
+  gap: 1rem;
+}
+
+.team-option {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-option.blue.selected {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: #2196f3;
+}
+
+.team-option.red.selected {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: #f44336;
+}
+
+.team-option input {
+  display: none;
+}
+
+.team-label {
+  font-weight: bold;
+}
+
+.error-message {
+  color: #ffcdd2;
+  background: rgba(244, 67, 54, 0.3);
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #f44336;
+}
+
+.join-btn {
+  padding: 1rem;
+  background: linear-gradient(45deg, #4caf50, #45a049);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.join-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.join-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.how-to-play {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.how-to-play h3 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.how-to-play ol {
+  padding-left: 1.5rem;
+}
+
+.how-to-play li {
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+/* Multiplayer UI Enhancements */
+.multiplayer-info {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.room-info {
+  margin-bottom: 10px;
+}
+
+.room-info p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.room-info strong {
+  color: #ffd700;
+}
+
+.waiting-message {
+  background: rgba(255, 193, 7, 0.2);
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.waiting-message p {
+  margin: 0;
+  color: #856404;
+  font-weight: 600;
+}
+
+.your-turn-message {
+  background: rgba(40, 167, 69, 0.2);
+  border: 2px solid #28a745;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  margin-top: 10px;
+  animation: pulse-green 2s infinite;
+}
+
+.your-turn-message p {
+  margin: 0;
+  color: #155724;
+  font-weight: 600;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+.team.your-team {
+  border: 3px solid #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+}
+
+.team.your-team h3::after {
+  content: ' 👑';
+}
+
+.item.not-your-turn {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.item.not-your-turn:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.round-overview .your-team-step {
+  background: rgba(255, 215, 0, 0.2);
+  border-left: 4px solid #ffd700;
+  padding-left: 10px;
+}
+
+.round-overview .current.your-team-step {
+  background: rgba(40, 167, 69, 0.2);
+  border-left: 4px solid #28a745;
+  animation: glow-current 2s infinite;
+}
+
+@keyframes glow-current {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.8);
+  }
+}
+
+/* Team picks styling for multiplayer */
+.team-picks .blue-picks h4,
+.team-picks .red-picks h4 {
+  position: relative;
+}
+
+.team-picks .blue-picks h4::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  border-radius: 50%;
+}
+
+.team-picks .red-picks h4::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: #dc3545;
+  border-radius: 50%;
+}
+
+/* Enhanced visual feedback for multiplayer */
+.multiplayer-info {
+  position: relative;
+  overflow: hidden;
+}
+
+.multiplayer-info::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    transform: rotate(45deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(100%);
+  }
+}
+
+/* Loading State Styles */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-state p {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 20px 0;
+}
+
+.loading-state::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #61dafb;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .team-info {
@@ -348,5 +848,53 @@
   .team-picks {
     grid-template-columns: 1fr;
     gap: 15px;
+  }
+
+  .mode-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mode-btn {
+    min-width: 250px;
+  }
+
+  .team-selection {
+    flex-direction: column;
+  }
+
+  .player-list {
+    flex-direction: column;
+  }
+
+  .multiplayer-info {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  .room-info p {
+    font-size: 12px;
+  }
+
+  .waiting-message p,
+  .your-turn-message p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .multiplayer-info {
+    padding: 10px;
+  }
+
+  .team.your-team {
+    border-width: 2px;
+  }
+
+  .connection-status {
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    font-size: 11px;
   }
 }
