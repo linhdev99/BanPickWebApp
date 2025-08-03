@@ -1,0 +1,110 @@
+# Dependencies
+node_modules/
+ban-pick-webapp/node_modules/
+ban-pick-webapp/npm-debug.log*
+ban-pick-webapp/yarn-debug.log*
+ban-pick-webapp/yarn-error.log*
+lerna-debug.log*
+
+# Production builds
+build/
+dist/
+ban-pick-webapp/build/
+ban-pick-webapp/dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+ban-pick-webapp/.env
+ban-pick-webapp/.env.local
+ban-pick-webapp/.env.development.local
+ban-pick-webapp/.env.test.local
+ban-pick-webapp/.env.production.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Temporary folders
+tmp/
+temp/
+
+# Package managers
+package-lock.json
+yarn.lock
+
+# React specific
+.eslintcache
+
+# Testing
+coverage/
+.nyc_output
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache
+.cache
+.parcel-cache
+
+# Windows specific
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS specific
+.AppleDouble
+.LSOverride
+Icon?
+
+# Editor temporary files
+*~
+.project
+.metadata
+.settings/
+*.sublime-project
+*.sublime-workspace
