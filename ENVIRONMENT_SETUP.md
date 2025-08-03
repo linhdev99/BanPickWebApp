@@ -46,6 +46,37 @@ This document explains how to set up environment variables for the Ban-Pick appl
    REACT_APP_SERVER_URL=http://localhost:5000
    ```
 
+## Quick Start with Root Package.json
+
+For the easiest development experience, you can run both server and client from the root directory:
+
+1. **First-time setup:**
+
+   ```bash
+   cd ban-pick-app
+   npm install
+   npm run setup
+   ```
+
+2. **Start both server and client in development mode:**
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Alternative individual commands:**
+
+   ```bash
+   # Run server only in dev mode
+   npm run server:dev
+
+   # Run client only in dev mode
+   npm run client:dev
+
+   # Install dependencies for both
+   npm run install:all
+   ```
+
 ## Environment Variables Reference
 
 ### Server (.env)
@@ -65,6 +96,19 @@ This document explains how to set up environment variables for the Ban-Pick appl
 | `REACT_APP_SERVER_URL` | http://localhost:5000 | Server URL for socket connection            |
 | `BROWSER`              | none                  | Browser to open (none to disable auto-open) |
 | `GENERATE_SOURCEMAP`   | true                  | Generate source maps for debugging          |
+
+## Available Root Scripts
+
+| Script                 | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `npm run dev`          | 🚀 Start both server and client in development mode |
+| `npm run start`        | 🏭 Start both in production mode                    |
+| `npm run setup`        | ⚙️ Install all dependencies and setup .env files    |
+| `npm run install:all`  | 📦 Install dependencies for both server and client  |
+| `npm run server:dev`   | 🔧 Start only server in development mode            |
+| `npm run client:dev`   | ⚛️ Start only client in development mode            |
+| `npm run client:build` | 🔨 Build client for production                      |
+| `npm run clean`        | 🧹 Clean all node_modules and build files           |
 
 ## Notes
 

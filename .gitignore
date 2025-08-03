@@ -1,28 +1,42 @@
-# Dependencies
+# ==============================================
+#           Ban-Pick App .gitignore
+# ==============================================
+# Comprehensive gitignore for monorepo structure
+# with Node.js server and React client
+
+# Dependencies - Root level and subprojects
 node_modules/
+*/node_modules/
+ban-pick-server/node_modules/
 ban-pick-webapp/node_modules/
-ban-pick-webapp/npm-debug.log*
-ban-pick-webapp/yarn-debug.log*
-ban-pick-webapp/yarn-error.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 lerna-debug.log*
 
 # Production builds
 build/
 dist/
+*/build/
+*/dist/
+ban-pick-server/build/
+ban-pick-server/dist/
 ban-pick-webapp/build/
 ban-pick-webapp/dist/
 
-# Environment variables
+# Environment variables - All levels
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-ban-pick-webapp/.env
-ban-pick-webapp/.env.local
-ban-pick-webapp/.env.development.local
-ban-pick-webapp/.env.test.local
-ban-pick-webapp/.env.production.local
+*/.env
+*/.env.local
+*/.env.development.local
+*/.env.test.local
+*/.env.production.local
+ban-pick-server/.env*
+ban-pick-webapp/.env*
 
 # OS generated files
 .DS_Store
@@ -42,15 +56,14 @@ Thumbs.db
 # Logs
 *.log
 logs/
+*/logs/
 
 # Runtime data
 pids/
-*.pid
-*.seed
-*.pid.lock
 
 # Coverage directory used by tools like istanbul
 coverage/
+*/coverage/
 
 # Optional npm cache directory
 .npm
@@ -61,16 +74,22 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+*/tmp/
+*/temp/
 
-# Package managers
-package-lock.json
+# Package managers - Keep package-lock.json for stability
 yarn.lock
+*/yarn.lock
+ban-pick-server/yarn.lock
+ban-pick-webapp/yarn.lock
+
+# Keep package-lock.json but ignore in specific folders if needed
+# package-lock.json  # Uncomment if you want to ignore everywhere
 
 # React specific
 .eslintcache
 
 # Testing
-coverage/
 .nyc_output
 
 # Microbundle cache
@@ -88,9 +107,7 @@ coverage/
 # Yarn Integrity file
 .yarn-integrity
 
-# parcel-bundler cache
-.cache
-.parcel-cache
+# parcel-bundler cache (merged with cache section above)
 
 # Windows specific
 Desktop.ini
@@ -108,3 +125,58 @@ Icon?
 .settings/
 *.sublime-project
 *.sublime-workspace
+
+# Monorepo specific
+.workspaces
+
+# Development and debugging
+*.tsbuildinfo
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Local configuration overrides
+config.local.json
+*/config.local.json
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Security
+.secrets
+.credentials
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Database files (if using local SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# Server specific ignores
+ban-pick-server/uploads/
+ban-pick-server/logs/
+ban-pick-server/tmp/
+
+# Client specific ignores
+ban-pick-webapp/.eslintcache
+ban-pick-webapp/storybook-static/
+
+# Documentation builds
+docs/build/
+*/docs/build/

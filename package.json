@@ -1,0 +1,55 @@
+{
+  "name": "ban-pick-app",
+  "version": "1.0.0",
+  "description": "Ban-Pick Application - Full Stack Real-time Multiplayer Game",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "start": "concurrently \"npm run server:start\" \"npm run client:start\"",
+    "server:dev": "cd ban-pick-server && npm run dev",
+    "server:start": "cd ban-pick-server && npm start",
+    "server:install": "cd ban-pick-server && npm install",
+    "client:dev": "cd ban-pick-webapp && npm start",
+    "client:start": "cd ban-pick-webapp && npm run build && serve -s build",
+    "client:install": "cd ban-pick-webapp && npm install",
+    "client:build": "cd ban-pick-webapp && npm run build",
+    "install:all": "npm run server:install && npm run client:install",
+    "clean": "npm run clean:server && npm run clean:client",
+    "clean:server": "cd ban-pick-server && rimraf node_modules package-lock.json",
+    "clean:client": "cd ban-pick-webapp && rimraf node_modules package-lock.json build",
+    "setup": "npm run install:all && npm run setup:env",
+    "setup:env": "echo Setting up environment files... && npm run setup:env:server && npm run setup:env:client",
+    "setup:env:server": "cd ban-pick-server && (if not exist .env copy .env.example .env)",
+    "setup:env:client": "cd ban-pick-webapp && (if not exist .env copy .env.example .env)",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5",
+    "serve": "^14.2.1"
+  },
+  "keywords": [
+    "ban-pick",
+    "multiplayer",
+    "real-time",
+    "socket.io",
+    "react",
+    "node.js",
+    "full-stack"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/ban-pick-app.git"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "workspaces": [
+    "ban-pick-server",
+    "ban-pick-webapp"
+  ]
+}
